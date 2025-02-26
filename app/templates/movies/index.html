@@ -1,0 +1,175 @@
+<!-- 
+  @Author: Zana Saedpanah
+  @Date:   2025-02-26 20:27:23
+  @Last Modified by:   Zana Saedpanah
+  @Last Modified time: 2025-02-26 20:27:26
+-->
+{% extends 'base.html' %}
+
+{% block title %}Movies - MovieShelf{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Movies</h1>
+
+    <div class="d-flex">
+        <!-- Genre Filter -->
+        <div class="dropdown me-2">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="genreDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                {% if current_genre %}
+                Genre: {{ current_genre }}
+                {% else %}
+                All Genres
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="genreDropdown">
+                <li>
+                    <a class="dropdown-item {% if not current_genre %}active{% endif %}"
+                        href="{{ url_for('movie.index', sort_by=current_sort) }}">
+                        All Genres
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                {% for genre in genres %}
+                <li>
+                    <a class="dropdown-item {% if current_genre == genre %}active{% endif %}"
+                        href="{{ url_for('movie.index', genre=genre, sort_by=current_sort) }}">
+                        {{ genre }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Sort Options -->
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Sort by:
+                {% if current_sort == 'title' %}
+                Title
+                {% elif current_sort == 'release_date' %}
+                Release Date
+                {% elif current_sort == 'date_added' %}
+                Date Added
+                {% else %}
+                Title
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                <li>
+                    <a class="dropdown-item {% if current_sort == 'title' %}active{% endif %}"
+                        href="{{ url_for('movie.index', genre=current_genre, sort_by='title') }}">
+                        Title
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if current_sort == 'release_date' %}active{% endif %}"
+                        href="{{ url_for('movie.index', genre=current_genre, sort_by='release_date') }}">
+                        Release Date
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {% if current_sort == 'date_added' %}active{% endif %}"
+                        href="{{ url_for('movie.index', genre=current_genre, sort_by='date_added') }}">
+                        Date Added
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% if movies.items %}
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+    {% for movie in movies.items %}
+    <div class="col">
+        <div class="card h-100 movie-card">
+            <a href="{{ url_for('movie.movie_detail', id=movie.id) }}">
+                {% if movie.poster_path %}
+                <img src="{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                {% else %}
+                <div class="card-img-top placeholder-poster d-flex justify-content-center align-items-center bg-light">
+                    <i class="fas fa-film fa-4x text-secondary"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">{{ movie.title }}</h6>
+                    <p class="card-text small text-muted">
+                        {% if movie.release_date %}
+                        {{ movie.release_date.year }}
+                        {% endif %}
+                        {% if movie.runtime %}
+                        <span class="ms-2">{{ movie.runtime }} min</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Movie pagination">
+    <ul class="pagination justify-content-center">
+        {% if movies.has_prev %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('movie.index', page=movies.prev_num, genre=current_genre, sort_by=current_sort) }}">
+                Previous
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+        </li>
+        {% endif %}
+
+        {% for page_num in movies.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+        {% if movies.page == page_num %}
+        <li class="page-item active">
+            <span class="page-link">
+                {{ page_num }}
+                <span class="sr-only">(current)</span>
+            </span>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('movie.index', page=page_num, genre=current_genre, sort_by=current_sort) }}">
+                {{ page_num }}
+            </a>
+        </li>
+        {% endif %}
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">...</span>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if movies.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('movie.index', page=movies.next_num, genre=current_genre, sort_by=current_sort) }}">
+                Next
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Next</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>No movies found. Try scanning your library or adjusting your filters.
+</div>
+{% endif %}
+{% endblock %}

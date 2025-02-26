@@ -1,0 +1,17 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+requests==2.31.0
+python-dotenv==1.0.0
+tmdbv3api==1.7.7     # For The Movie Database API
+guessit==3.7.1       # For parsing filenames
+SQLAlchemy==2.0.23
+Werkzeug==2.3.7
+Jinja2==3.1.2
+click==8.1.7
+itsdangerous==2.1.2
+packaging==23.2
+blinker==1.6.2
+alembic==1.12.1
+Mako==1.2.4
+psycopg2-binary==2.9.9  # PostgreSQL adapter (optional)

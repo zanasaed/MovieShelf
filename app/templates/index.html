@@ -1,0 +1,141 @@
+<!-- 
+  @Author: Zana Saedpanah
+  @Date:   2025-02-26 20:15:51
+  @Last Modified by:   Zana Saedpanah
+  @Last Modified time: 2025-02-26 20:26:54
+-->
+{% extends 'base.html' %}
+
+{% block title %}MovieShelf - Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded mb-4">
+    <h1 class="display-4">Welcome to MovieShelf</h1>
+    <p class="lead">Your personal movie and TV show library</p>
+    <hr class="my-4">
+    <p>Browse your collection, find what to watch, and enjoy your media from any device.</p>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('movie.index') }}" class="btn btn-primary">
+            <i class="fas fa-film me-2"></i>Browse Movies
+        </a>
+        <a href="{{ url_for('tvshow.index') }}" class="btn btn-success">
+            <i class="fas fa-tv me-2"></i>Browse TV Shows
+        </a>
+        <form action="{{ url_for('main.scan') }}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fas fa-sync-alt me-2"></i>Scan Library
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-center h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Movies</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ movie_count }}</h3>
+                <p class="card-text">Movies in your library</p>
+                <a href="{{ url_for('movie.index') }}" class="btn btn-outline-primary">Browse All Movies</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card text-center h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">TV Shows</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ tvshow_count }}</h3>
+                <p class="card-text">TV Shows in your library</p>
+                <a href="{{ url_for('tvshow.index') }}" class="btn btn-outline-success">Browse All TV Shows</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if recent_movies %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Recently Added Movies</h2>
+        <a href="{{ url_for('movie.index', sort_by='date_added') }}" class="btn btn-sm btn-outline-secondary">
+            View All
+        </a>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+        {% for movie in recent_movies %}
+        <div class="col">
+            <div class="card h-100 movie-card">
+                <a href="{{ url_for('movie.movie_detail', id=movie.id) }}">
+                    {% if movie.poster_path %}
+                    <img src="{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                    {% else %}
+                    <div
+                        class="card-img-top placeholder-poster d-flex justify-content-center align-items-center bg-light">
+                        <i class="fas fa-film fa-4x text-secondary"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">{{ movie.title }}</h6>
+                        <p class="card-text small text-muted">
+                            {% if movie.release_date %}
+                            {{ movie.release_date.year }}
+                            {% endif %}
+                            {% if movie.runtime %}
+                            <span class="ms-2">{{ movie.runtime }} min</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if recent_tvshows %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Recently Added TV Shows</h2>
+        <a href="{{ url_for('tvshow.index', sort_by='date_added') }}" class="btn btn-sm btn-outline-secondary">
+            View All
+        </a>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+        {% for tvshow in recent_tvshows %}
+        <div class="col">
+            <div class="card h-100 tvshow-card">
+                <a href="{{ url_for('tvshow.tvshow_detail', id=tvshow.id) }}">
+                    {% if tvshow.poster_path %}
+                    <img src="{{ tvshow.poster_path }}" class="card-img-top" alt="{{ tvshow.title }}">
+                    {% else %}
+                    <div
+                        class="card-img-top placeholder-poster d-flex justify-content-center align-items-center bg-light">
+                        <i class="fas fa-tv fa-4x text-secondary"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">{{ tvshow.title }}</h6>
+                        <p class="card-text small text-muted">
+                            {% if tvshow.first_air_date %}
+                            {{ tvshow.first_air_date.year }}
+                            {% if tvshow.status == 'Ended' and tvshow.last_air_date %}
+                            - {{ tvshow.last_air_date.year }}
+                            {% endif %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

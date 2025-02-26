@@ -1,0 +1,138 @@
+<!-- 
+  @Author: Zana Saedpanah
+  @Date:   2025-02-26 20:27:47
+  @Last Modified by:   Zana Saedpanah
+  @Last Modified time: 2025-02-26 20:27:49
+-->
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} - MovieShelf{% endblock %}
+
+{% block content %}
+<div class="movie-detail">
+    <!-- Backdrop with overlay -->
+    {% if movie.backdrop_path %}
+    <div class="movie-backdrop mb-4" style="background-image: url('{{ movie.backdrop_path }}');">
+        <div class="backdrop-overlay p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        {% if movie.poster_path %}
+                        <img src="{{ movie.poster_path }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+                        {% else %}
+                        <div class="placeholder-poster rounded d-flex justify-content-center align-items-center bg-light shadow"
+                            style="height: 450px;">
+                            <i class="fas fa-film fa-4x text-secondary"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h1 class="text-white">{{ movie.title }}</h1>
+                        {% if movie.original_title and movie.original_title != movie.title %}
+                        <h5 class="text-light mb-3">{{ movie.original_title }}</h5>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            {% if movie.release_date %}
+                            <span class="badge bg-primary me-2">{{ movie.release_date.year }}</span>
+                            {% endif %}
+
+                            {% if movie.runtime %}
+                            <span class="badge bg-secondary me-2">{{ movie.runtime }} min</span>
+                            {% endif %}
+
+                            {% if movie.resolution %}
+                            <span class="badge bg-info me-2">{{ movie.resolution }}</span>
+                            {% endif %}
+
+                            {% if movie.genres %}
+                            {% for genre in movie.genres.split(',') %}
+                            <span class="badge bg-success me-2">{{ genre }}</span>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        {% if movie.overview %}
+                        <div class="overview mb-4">
+                            <h5 class="text-light">Overview</h5>
+                            <p class="text-light">{{ movie.overview }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-3">
+                            <a href="{{ url_for('movie.play_movie', id=movie.id) }}" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i>Play
+                            </a>
+
+                            <a href="{{ movie.file_path }}" class="btn btn-outline-light">
+                                <i class="fas fa-folder-open me-2"></i>Open File Location
+                            </a>
+                        </div>
+
+                        {% if movie.file_size %}
+                        <div class="mb-3">
+                            <h5 class="text-light">File Info</h5>
+                            <p class="text-light mb-1">
+                                <i class="fas fa-hdd me-2"></i>Size: {{ (movie.file_size / (1024*1024))|round(2) }} MB
+                            </p>
+                            <p class="text-light mb-0">
+                                <i class="fas fa-file me-2"></i>Path: {{ movie.file_path }}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Fallback for no backdrop -->
+    <div class="container mb-4">
+        <div class="row">
+            <div class="col-md-3 mb-3 mb-md-0">
+                {% if movie.poster_path %}
+                <img src="{{ movie.poster_path }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+                {% else %}
+                <div class="placeholder-poster rounded d-flex justify-content-center align-items-center bg-light shadow"
+                    style="height: 450px;">
+                    <i class="fas fa-film fa-4x text-secondary"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-9">
+                <h1>{{ movie.title }}</h1>
+                {% if movie.original_title and movie.original_title != movie.title %}
+                <h5 class="text-muted mb-3">{{ movie.original_title }}</h5>
+                {% endif %}
+
+                <div class="mb-3">
+                    {% if movie.release_date %}
+                    <span class="badge bg-primary me-2">{{ movie.release_date.year }}</span>
+                    {% endif %}
+
+                    {% if movie.runtime %}
+                    <span class="badge bg-secondary me-2">{{ movie.runtime }} min</span>
+                    {% endif %}
+
+                    {% if movie.resolution %}
+                    <span class="badge bg-info me-2">{{ movie.resolution }}</span>
+                    {% endif %}
+
+                    {% if movie.genres %}
+                    {% for genre in movie.genres.split(',') %}
+                    <span class="badge bg-success me-2">{{ genre }}</span>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if movie.overview %}
+                <div class="overview mb-4">
+                    <h5>Overview</h5>
+                    <p>{{ movie.overview }}</p>
+                </div>
+                {% endif %}
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-3">
+                    <a href="{{ url_for('movie.play_movie', id=movie.id) }}" class="btn btn-primary">
+                        <i class="fas fa-play me-2"></i>Play
+                    </a>
